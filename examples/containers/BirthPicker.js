@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Picker from 'react-mobile-picker';
 
@@ -29,7 +29,7 @@ export default class BirthPicker extends Component {
   }
 
   handleChange = (name, value) => {
-    this.setState(({valueGroups, optionGroups}) => {
+    this.setState(({ valueGroups, optionGroups }) => {
       const nextState = {
         valueGroups: {
           ...valueGroups,
@@ -38,7 +38,10 @@ export default class BirthPicker extends Component {
       };
       if (name === 'year' && valueGroups.month === '02') {
         const yearValue = parseInt(value);
-        if ((yearValue % 4 === 0 && yearValue % 100 !== 0) || (yearValue % 400 === 0)) {
+        if (
+          (yearValue % 4 === 0 && yearValue % 100 !== 0) ||
+          yearValue % 400 === 0
+        ) {
           nextState.optionGroups = {
             ...optionGroups,
             day: generateNumberArray(1, 29)
@@ -55,14 +58,22 @@ export default class BirthPicker extends Component {
             ...optionGroups,
             day: generateNumberArray(1, 28)
           };
-        } else if (['01', '03', '05', '07', '08', '10', '12'].indexOf(value) > -1 &&
-          ['01', '03', '05', '07', '08', '10', '12'].indexOf(valueGroups.month) < 0) {
+        } else if (
+          ['01', '03', '05', '07', '08', '10', '12'].indexOf(value) > -1 &&
+          ['01', '03', '05', '07', '08', '10', '12'].indexOf(
+            valueGroups.month
+          ) < 0
+        ) {
           nextState.optionGroups = {
             ...optionGroups,
             day: generateNumberArray(1, 31)
           };
-        } else if (['01', '03', '05', '07', '08', '10', '12'].indexOf(value) < 0 &&
-          ['01', '03', '05', '07', '08', '10', '12'].indexOf(valueGroups.month) > -1) {
+        } else if (
+          ['01', '03', '05', '07', '08', '10', '12'].indexOf(value) < 0 &&
+          ['01', '03', '05', '07', '08', '10', '12'].indexOf(
+            valueGroups.month
+          ) > -1
+        ) {
           nextState.optionGroups = {
             ...optionGroups,
             day: generateNumberArray(1, 30)
@@ -74,45 +85,64 @@ export default class BirthPicker extends Component {
   };
 
   togglePicker = () => {
-    this.setState(({isPickerShow}) => ({
+    this.setState(({ isPickerShow }) => ({
       isPickerShow: !isPickerShow
     }));
   };
 
   render() {
-    const {isPickerShow, optionGroups, valueGroups} = this.state;
+    const { isPickerShow, optionGroups, valueGroups } = this.state;
     const maskStyle = {
       display: isPickerShow ? 'block' : 'none'
     };
-    const pickerModalClass = `picker-modal${isPickerShow ? ' picker-modal-toggle' : ''}`;
+    const pickerModalClass = `picker-modal${
+      isPickerShow ? ' picker-modal-toggle' : ''
+    }`;
 
     return (
-      <div className="example-container">
-        <div className="weui_cells_title">2. As a modal and bind to input field</div>
-        <div className="weui_cells">
-          <div className="weui_cell weui_cell_select weui_select_after">
-            <div className="weui_cell_hd">Birthdate</div>
-            <div className="weui_cell_bd weui_cell_primary">
+      <div className='example-container'>
+        <div className='weui_cells_title'>
+          2. As a modal and bind to input field
+        </div>
+        <div className='weui_cells'>
+          <div className='weui_cell weui_cell_select weui_select_after'>
+            <div className='weui_cell_hd'>Birthdate</div>
+            <div className='weui_cell_bd weui_cell_primary'>
               <input
-                type="text"
-                className="weui_select"
-                value={valueGroups.year + '-' + valueGroups.month + '-' + valueGroups.day}
+                type='text'
+                className='weui_select'
+                value={
+                  valueGroups.year +
+                  '-' +
+                  valueGroups.month +
+                  '-' +
+                  valueGroups.day
+                }
                 readOnly
-                onClick={this.togglePicker} />
+                onClick={this.togglePicker}
+              />
             </div>
           </div>
         </div>
-        <div className="picker-modal-container">
-          <div className="picker-modal-mask" style={maskStyle} onClick={this.togglePicker}></div>
+        <div className='picker-modal-container'>
+          <div
+            className='picker-modal-mask'
+            style={maskStyle}
+            onClick={this.togglePicker}
+          ></div>
           <div className={pickerModalClass}>
             <header>
-              <div className="title">Choose your birthdate</div>
-              <a href="javascript:;" onClick={this.togglePicker}>OK</a>
+              <div className='title'>Choose your birthdate</div>
+              <a href='javascript:;' onClick={this.togglePicker}>
+                OK
+              </a>
             </header>
             <Picker
-             optionGroups={optionGroups}
-             valueGroups={valueGroups}
-             onChange={this.handleChange} />
+              optionGroups={optionGroups}
+              valueGroups={valueGroups}
+              itemHeight={78}
+              onChange={this.handleChange}
+            />
           </div>
         </div>
       </div>

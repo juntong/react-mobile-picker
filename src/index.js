@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import './style.less';
 
@@ -30,57 +30,76 @@ class PickerColumn extends Component {
     this.setState(this.computeTranslate(nextProps));
   }
 
-  computeTranslate = (props) => {
-    const {options, value, itemHeight, columnHeight} = props;
+  computeTranslate = props => {
+    const { options, value, itemHeight, columnHeight } = props;
     let selectedIndex = options.indexOf(value);
     if (selectedIndex < 0) {
       // throw new ReferenceError();
-      console.warn('Warning: "' + this.props.name+ '" doesn\'t contain an option of "' + value + '".');
+      console.warn(
+        'Warning: "' +
+          this.props.name +
+          '" doesn\'t contain an option of "' +
+          value +
+          '".'
+      );
       this.onValueSelected(options[0]);
       selectedIndex = 0;
     }
     return {
-      scrollerTranslate: columnHeight / 2 - itemHeight / 2 - selectedIndex * itemHeight,
-      minTranslate: columnHeight / 2 - itemHeight * options.length + itemHeight / 2,
+      scrollerTranslate:
+        columnHeight / 2 - itemHeight / 2 - selectedIndex * itemHeight,
+      minTranslate:
+        columnHeight / 2 - itemHeight * options.length + itemHeight / 2,
       maxTranslate: columnHeight / 2 - itemHeight / 2
     };
   };
 
-  onValueSelected = (newValue) => {
+  onValueSelected = newValue => {
     this.props.onChange(this.props.name, newValue);
   };
 
-  handleTouchStart = (event) => {
+  handleTouchStart = event => {
     const startTouchY = event.targetTouches[0].pageY;
-    this.setState(({scrollerTranslate}) => ({
+    this.setState(({ scrollerTranslate }) => ({
       startTouchY,
       startScrollerTranslate: scrollerTranslate
     }));
   };
 
-  handleTouchMove = (event) => {
+  handleTouchMove = event => {
     event.preventDefault();
     const touchY = event.targetTouches[0].pageY;
-    this.setState(({isMoving, startTouchY, startScrollerTranslate, minTranslate, maxTranslate}) => {
-      if (!isMoving) {
-        return {
-          isMoving: true
+    this.setState(
+      ({
+        isMoving,
+        startTouchY,
+        startScrollerTranslate,
+        minTranslate,
+        maxTranslate
+      }) => {
+        if (!isMoving) {
+          return {
+            isMoving: true
+          };
         }
-      }
 
-      let nextScrollerTranslate = startScrollerTranslate + touchY - startTouchY;
-      if (nextScrollerTranslate < minTranslate) {
-        nextScrollerTranslate = minTranslate - Math.pow(minTranslate - nextScrollerTranslate, 0.8);
-      } else if (nextScrollerTranslate > maxTranslate) {
-        nextScrollerTranslate = maxTranslate + Math.pow(nextScrollerTranslate - maxTranslate, 0.8);
+        let nextScrollerTranslate =
+          startScrollerTranslate + touchY - startTouchY;
+        if (nextScrollerTranslate < minTranslate) {
+          nextScrollerTranslate =
+            minTranslate - Math.pow(minTranslate - nextScrollerTranslate, 0.8);
+        } else if (nextScrollerTranslate > maxTranslate) {
+          nextScrollerTranslate =
+            maxTranslate + Math.pow(nextScrollerTranslate - maxTranslate, 0.8);
+        }
+        return {
+          scrollerTranslate: nextScrollerTranslate
+        };
       }
-      return {
-        scrollerTranslate: nextScrollerTranslate
-      };
-    });
+    );
   };
 
-  handleTouchEnd = (event) => {
+  handleTouchEnd = event => {
     if (!this.state.isMoving) {
       return;
     }
@@ -90,25 +109,27 @@ class PickerColumn extends Component {
       startScrollerTranslate: 0
     });
     setTimeout(() => {
-      const {options, itemHeight} = this.props;
-      const {scrollerTranslate, minTranslate, maxTranslate} = this.state;
+      const { options, itemHeight } = this.props;
+      const { scrollerTranslate, minTranslate, maxTranslate } = this.state;
       let activeIndex;
       if (scrollerTranslate > maxTranslate) {
         activeIndex = 0;
       } else if (scrollerTranslate < minTranslate) {
         activeIndex = options.length - 1;
       } else {
-        activeIndex = - Math.floor((scrollerTranslate - maxTranslate) / itemHeight);
+        activeIndex = -Math.floor(
+          (scrollerTranslate - maxTranslate) / itemHeight
+        );
       }
       this.onValueSelected(options[activeIndex]);
     }, 0);
   };
 
-  handleTouchCancel = (event) => {
+  handleTouchCancel = event => {
     if (!this.state.isMoving) {
       return;
     }
-    this.setState((startScrollerTranslate) => ({
+    this.setState(startScrollerTranslate => ({
       isMoving: false,
       startTouchY: 0,
       startScrollerTranslate: 0,
@@ -116,7 +137,7 @@ class PickerColumn extends Component {
     }));
   };
 
-  handleItemClick = (option) => {
+  handleItemClick = option => {
     if (option !== this.props.value) {
       this.onValueSelected(option);
     } else {
@@ -125,19 +146,24 @@ class PickerColumn extends Component {
   };
 
   renderItems() {
-    const {options, itemHeight, value} = this.props;
+    const { options, itemHeight, value } = this.props;
     return options.map((option, index) => {
       const style = {
         height: itemHeight + 'px',
         lineHeight: itemHeight + 'px'
       };
-      const className = `picker-item${option === value ? ' picker-item-selected' : ''}`;
+      const className = `picker-item${
+        option === value ? ' picker-item-selected' : ''
+      }`;
       return (
         <div
           key={index}
           className={className}
           style={style}
-          onClick={() => this.handleItemClick(option)}>{option}</div>
+          onClick={() => this.handleItemClick(option)}
+        >
+          {option}
+        </div>
       );
     });
   }
@@ -154,19 +180,24 @@ class PickerColumn extends Component {
     if (this.state.isMoving) {
       style.transitionDuration = '0ms';
     }
-    return(
-      <div className="picker-column">
-        <div
-          className="picker-scroller"
-          style={style}
-          onTouchStart={this.handleTouchStart}
-          onTouchMove={this.handleTouchMove}
-          onTouchEnd={this.handleTouchEnd}
-          onTouchCancel={this.handleTouchCancel}>
-          {this.renderItems()}
+    return (
+      <React.Fragment>
+        <div className='picker-column'>
+          <div
+            className='picker-scroller'
+            style={style}
+            onTouchStart={this.handleTouchStart}
+            onTouchMove={this.handleTouchMove}
+            onTouchEnd={this.handleTouchEnd}
+            onTouchCancel={this.handleTouchCancel}
+          >
+            {this.renderItems()}
+          </div>
         </div>
-      </div>
-    )
+        {console.log(this.props.separate)}
+        {this.props.separate && <span>:</span>}
+      </React.Fragment>
+    );
   }
 }
 
@@ -187,12 +218,20 @@ export default class Picker extends Component {
   };
 
   renderInner() {
-    const {optionGroups, valueGroups, itemHeight, height, onChange, onClick} = this.props;
+    const {
+      optionGroups,
+      valueGroups,
+      itemHeight,
+      height,
+      onChange,
+      onClick
+    } = this.props;
     const highlightStyle = {
       height: itemHeight,
       marginTop: -(itemHeight / 2)
     };
     const columnNodes = [];
+    let i = 1;
     for (let name in optionGroups) {
       columnNodes.push(
         <PickerColumn
@@ -203,13 +242,16 @@ export default class Picker extends Component {
           itemHeight={itemHeight}
           columnHeight={height}
           onChange={onChange}
-          onClick={onClick} />
+          onClick={onClick}
+          separate={i < Object.getOwnPropertyNames(optionGroups).length}
+        />
       );
+      i++;
     }
     return (
-      <div className="picker-inner">
+      <div className='picker-inner'>
         {columnNodes}
-        <div className="picker-highlight" style={highlightStyle}></div>
+        <div className='picker-highlight' style={highlightStyle}></div>
       </div>
     );
   }
@@ -220,7 +262,7 @@ export default class Picker extends Component {
     };
 
     return (
-      <div className="picker-container" style={style}>
+      <div className='picker-container' style={style}>
         {this.renderInner()}
       </div>
     );
